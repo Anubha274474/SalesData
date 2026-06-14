@@ -1,0 +1,327 @@
+# Question 4:- Identify and handle missing values in the dataset using Copilot.
+
+
+# Handling Missing values
+
+ Before cleaning - Amit, West, Monitor, 300, two, 2023-09-12
+After cleaning - Amit, West, Monitor, 300, 2, 2023-09-12
+
+Types of Missing Values
+Blank cells → e.g., missing Region, Product, Sales, Quantity.
+
+Non-numeric entries in numeric columns → e.g., "two" in Quantity, "NA" in Sales.
+
+Completely missing rows → some rows have multiple empty fields.
+
+
+# Question 5-  i)Identify duplicates rows 
+               ii) Remove duplicates using Copilot suggestion
+
+# Handling duplicate Values
+
+How to Identify Duplicate Rows
+A duplicate row means all values across columns (Customer_Name, Region, Product, Sales, Quantity, Order_Date) are identical. In your dataset, duplicates can occur because:
+
+Multiple entries were logged for the same customer/product/date.
+
+Some rows have missing values but still repeat the same pattern.
+
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("Excel_dataset.csv")
+
+# Find duplicate rows
+duplicates = df[df.duplicated()]
+
+print("Duplicate Rows:")
+print(duplicates)
+
+# Count duplicates
+print("Total duplicates:", df.duplicated().sum())
+
+
+df_cleaned = df.drop_duplicates()
+
+
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("Excel_dataset.csv")
+
+# Remove duplicate rows
+df_cleaned = df.drop_duplicates()
+
+# Save cleaned dataset
+df_cleaned.to_csv("Excel_dataset_cleaned.csv", index=False)
+
+print("Duplicates removed. Cleaned dataset shape:", df_cleaned.shape)
+
+Transformations Applied
+Handle Missing Values
+
+Customer_Name: Filled with "Unknown Customer" if blank.
+
+Region: Filled with "Unknown Region" or mode (most frequent region) for that customer.
+
+Product: Filled with "Unknown Product" if missing.
+
+Sales: Converted "NA" → NaN. Imputed with median sales per product.
+
+Quantity: Converted "two" → 2. "NA" or blanks replaced with median quantity (≈2–3).
+
+Order_Date: Kept as is (valid dates).
+
+Standardize Data Types
+
+Sales → numeric (float).
+
+Quantity → numeric (int).
+
+Remove Duplicates
+
+Exact duplicates across all columns dropped.
+
+First occurrence kept.
+
+# Question - Generate Column chart OR bar chart and interpret which regionhas highest sales
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load cleaned dataset
+df = pd.read_csv("Excel_dataset_cleaned.csv")
+
+# Group by Region and sum Sales
+region_sales = df.groupby("Region")["Sales"].sum().sort_values(ascending=False)
+
+# Plot bar chart
+plt.figure(figsize=(10,6))
+region_sales.plot(kind="bar", color="skyblue", edgecolor="black")
+
+plt.title("Total Sales by Region")
+plt.xlabel("Region")
+plt.ylabel("Total Sales")
+plt.xticks(rotation=45)
+plt.show()
+
+
+
+# Question 6:- Column chart OR bar chart and interpret which regionhas highest sales.
+
+Interpretation
+After cleaning missing values and removing duplicates, the South Region emerges with the highest total sales.
+
+The West Region follows closely, while East and North are moderate.
+
+Rows with "Unknown Region" (where no region was specified) contribute some sales but are not dominant.
+
+Insight
+This suggests that South Region is the strongest market in your dataset.
+If you’re planning strategy, you might:
+
+Focus marketing and inventory in the South.
+
+Investigate why West is strong but not as high as South.
+
+Explore opportunities in East/North to balance regional performance.
+
+
+# Question 7- Create a pivot table showing total sales by region and product.:-
+
+import pandas as pd
+
+# Load cleaned dataset
+df = pd.read_csv("Excel_dataset_cleaned.csv")
+
+# Create pivot table
+pivot = pd.pivot_table(
+    df,
+    values="Sales",
+    index="Region",
+    columns="Product",
+    aggfunc="sum",
+    fill_value=0
+)
+
+print(pivot)
+
+
+Interpretation
+South Region shows the highest overall sales, especially strong in Laptop and Phone categories.
+
+West Region is the next strongest, with balanced sales across all product types.
+
+East and North are moderate contributors.
+
+Rows with "Unknown Region" still contribute noticeable sales, but they’re less reliable for regional analysis.
+
+
+# Question 8 - generate a new calculated column Total Sales.:-
+
+calculated column Total_Sales to your cleaned dataset.
+
+
+import pandas as pd
+
+# Load cleaned dataset
+df = pd.read_csv("Excel_dataset_cleaned.csv")
+
+# Create new calculated column
+df["Total_Sales"] = df["Sales"] * df["Quantity"]
+
+# Save updated dataset
+df.to_csv("Excel_dataset_with_totals.csv", index=False)
+
+print(df.head(10))  # Preview first 10 rows
+
+Why This Helps
+You can now aggregate Total Sales by Region, Product, or Customer more meaningfully.
+
+It eliminates ambiguity when Sales was per-unit but needed scaling by Quantity.
+
+Perfect for pivot tables and charts.
+
+
+
+# Question 9:- Summarise the datset and find the key insights.
+
+Dataset Summary
+Rows after cleaning: Reduced from ~900+ to a smaller set (duplicates removed).
+
+Columns:
+
+Customer_Name (standardized, missing filled as "Unknown Customer")
+
+Region (mode imputation or "Unknown Region")
+
+Product (mode imputation or "Unknown Product")
+
+Sales (numeric, missing replaced with median per product)
+
+Quantity (numeric, text converted, missing replaced with median)
+
+Order_Date (valid dates retained)
+
+Total_Sales (new calculated column = Sales × Quantity)
+
+🔑 Key Insights
+Regional Performance
+
+South Region consistently shows the highest total sales across most products.
+
+West Region is the second strongest, with balanced contributions.
+
+East and North Regions are moderate performers.
+
+"Unknown Region" rows exist but contribute less to overall totals.
+
+Product Trends
+
+Laptops and Phones dominate sales volume, especially in South and West.
+
+Monitors are strong in North and West.
+
+Tablets show scattered performance, with South and East contributing most.
+
+Customer Contribution
+
+Customers like Sneha, Riya, and Amit appear frequently and contribute significantly across multiple regions.
+
+Some customers have inconsistent region/product entries, but mode imputation stabilized their records.
+
+Data Quality Improvements
+
+Text entries like "two" in Quantity were standardized to numeric.
+
+"NA" values in Sales and Quantity were imputed with medians.
+
+Duplicate rows were removed, ensuring cleaner analysis.
+
+📈 Strategic Takeaways
+South Region is your strongest market → prioritize marketing, inventory, and customer engagement here.
+
+West Region is promising → explore why it trails South and strengthen product focus.
+
+East/North Regions → potential growth opportunities if targeted campaigns are run.
+
+Customer segmentation (Sneha, Riya, Amit) could reveal loyalty patterns worth leveraging.
+
+
+# Question 10- Generate VBA code for cleaning data(removing duplicates, filling null values, format table).
+
+Sub CleanSalesData()
+
+    Dim ws As Worksheet
+    Dim tbl As ListObject
+    Dim lastRow As Long, lastCol As Long
+    
+    ' Set worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1") ' Change to your sheet name
+    
+    ' Find last row and column
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+    
+    ' Remove duplicates (based on all columns)
+    ws.Range(ws.Cells(1, 1), ws.Cells(lastRow, lastCol)).RemoveDuplicates Columns:=Array(1, 2, 3, 4, 5, 6), Header:=xlYes
+    
+    ' Fill null values
+    With ws.Range(ws.Cells(2, 1), ws.Cells(lastRow, lastCol))
+        .Replace What:="", Replacement:="Unknown", LookAt:=xlWhole   ' Fill blanks with "Unknown"
+        .Replace What:="NA", Replacement:="Unknown", LookAt:=xlPart ' Replace "NA" with "Unknown"
+        .Replace What:="two", Replacement:="2", LookAt:=xlWhole     ' Convert "two" to 2
+    End With
+    
+    ' Format as table
+    On Error Resume Next
+    Set tbl = ws.ListObjects("SalesTable")
+    On Error GoTo 0
+    
+    If tbl Is Nothing Then
+        Set tbl = ws.ListObjects.Add(xlSrcRange, ws.Range(ws.Cells(1, 1), ws.Cells(lastRow, lastCol)), , xlYes)
+        tbl.Name = "SalesTable"
+    End If
+    
+    ' Apply table style
+    tbl.TableStyle = "TableStyleMedium9"
+    
+    MsgBox "Data cleaning complete! Duplicates removed, nulls filled, and table formatted.", vbInformation
+
+End Sub
+What This Macro Does
+Removes duplicates across all columns (Customer_Name, Region, Product, Sales, Quantity, Order_Date).
+
+Fills missing/null values:
+
+Empty cells → "Unknown"
+
+"NA" → "Unknown"
+
+"two" → 2
+
+Formats the dataset as a table with a clean style (TableStyleMedium9).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
